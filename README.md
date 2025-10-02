@@ -1,86 +1,123 @@
-Klyra - Smart Parking System
-Welcome to Klyra, a modern web application designed to simplify the parking experience. Klyra provides users with a platform to find, book, and manage parking spaces in real-time, eliminating the stress of searching for a spot. This is a full-stack solution with a focus on user experience and real-world utility.
+# 🚗 Klyra — Smart Parking System
 
-✨ Features
-User Authentication: Secure sign-up and login for a personalized experience.
+Welcome to **Klyra** — a modern full-stack web application that simplifies the parking experience.  
+Users can find, book, and manage parking spaces in real-time. Klyra focuses on great UX and real-world utility.
 
-User Dashboard: View booking history, manage credits, and update profile information.
+---
 
-Real-Time Availability: See live parking spot availability powered by on-site sensors.
+## ✨ Features
+- 🔒 **User Authentication** (signup & login)  
+- 📊 **User Dashboard** (booking history, credits, profile)  
+- 🟢 **Real-Time Availability** (sensor-driven)  
+- 📍 **Seamless Booking** (reserve in a few clicks)  
+- 💳 **Credit Payment System**  
+- 🎥 **Live Camera Feed** for security  
+- 📱 **Responsive Design** (desktop / tablet / mobile)  
 
-Seamless Booking: Find and reserve a parking spot in just a few clicks.
+---
 
-Credit System: A simple, credit-based system for payments.
+## 🛠️ Tech Stack
+- **Frontend**: React + TypeScript + Vite  
+- **UI**: shadcn-ui  
+- **Styling**: Tailwind CSS  
+- **Backend / DB**: Supabase  
+- **Data Fetching**: TanStack Query (React Query)  
+- **Forms & Validation**: React Hook Form + Zod  
 
-Live Feed: View a live video feed of the parking area for added security.
+---
 
-Responsive Design: Fully functional and beautiful on desktops, tablets, and mobile devices.
+## 🚀 Quick Start
 
-🛠️ Tech Stack
-This project is built with a modern and powerful technology stack:
+### Prerequisites
+- Node.js (**v18+ recommended**)  
+- npm (or pnpm / yarn)
 
-Frontend: React, TypeScript, Vite
+### Clone the repo
+```bash
+git clone https://github.com/EnigmoSharma/Klyra.git
+cd Klyra
 
-UI Components: shadcn-ui
-
-Styling: Tailwind CSS
-
-Backend & Database: Supabase
-
-Data Fetching: TanStack Query (React Query)
-
-Form Management: React Hook Form & Zod
-
-🚀 Getting Started
-To get a local copy up and running, follow these simple steps.
-
-Prerequisites
-Make sure you have Node.js (version 18 or higher is recommended) and npm installed on your machine.
-
-Installation & Setup
-Clone the repository:
-
-Bash
-
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-Navigate into the project directory:
-
-Bash
-
-cd YOUR_REPO_NAME
-Install NPM packages:
-
-Bash
-
+### Install dependencies
+```bash
 npm install
-Set up environment variables:
-Create a file named .env in the root of your project and add your Supabase project credentials.
 
-Code snippet
+### Environment variables
+
+Create a .env file in the project root (or .env.local) and add your Supabase credentials:
 
 VITE_SUPABASE_URL="YOUR_SUPABASE_URL"
 VITE_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"
-Start the development server:
 
-Bash
 
+Optionally add other env variables used by your app (e.g. video feed URL, API endpoints).
+
+### Run locally
+```bash
 npm run dev
-Open http://localhost:5173 to view it in your browser.
 
-📜 Available Scripts
-In the project directory, you can run:
+Open your browser at: http://localhost:8080
 
-npm run dev: Starts the application in development mode.
 
-npm run build: Bundles the app for production to the dist folder.
+### Available Scripts
 
-npm run lint: Runs the ESLint checker to find and fix problems in the code.
+npm run dev — Start development server
 
-npm run preview: Serves the production build locally to preview it before deployment.
+npm run build — Build production bundle (output: dist/)
 
-🚢 Deployment
-This Vite project can be easily deployed to any static site hosting service.
+npm run preview — Preview production build locally
 
-Recommended Platforms: Vercel, Netlify, GitHub Pages.
+npm run lint — Run linters (ESLint / Prettier)
 
-To deploy, simply connect your GitHub repository to one of these services. It will automatically build and deploy your project upon every push to the main branch.
+(Add or adjust scripts in package.json as needed.)
+
+### Deployment
+
+This Vite app can be deployed to any static hosting provider. Recommended:
+
+Vercel — automatic deployments from GitHub
+
+Netlify — simple continuous deploy
+
+GitHub Pages — for simple static hosting
+
+### General steps:
+
+Push the repo to GitHub.
+
+Connect repository to Vercel/Netlify.
+
+Set environment variables in the hosting dashboard (Supabase URL & anon key).
+
+Deploy — the platform will run npm run build and publish the dist/.
+
+### Contributing
+
+Contributions welcome! Please:
+
+Fork the repo
+
+Create a feature branch:
+
+git checkout -b feat/my-feature
+
+
+Commit your changes:
+
+git commit -m "feat: add ..."
+
+
+Push to your fork and open a PR
+
+👉 For big changes, open an issue to discuss first.
+
+### License
+
+This project is licensed under the MIT License.
+See LICENSE
+ for details.
+
+### Contact
+
+Maintainer: EnigmoSharma (GitHub)
+
+Repository: https://github.com/EnigmoSharma/Klyra.git
