@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - File Check</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">File Accessibility Check</h1>
+        
+        <div class="grid gap-4">
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="font-semibold mb-2">Available Pages:</h2>
+                <ul class="space-y-2">
+                    <li><a href="index.html" class="text-blue-600 hover:underline">index.html</a></li>
+                    <li><a href="auth.html" class="text-blue-600 hover:underline">auth.html</a></li>
+                    <li><a href="dashboard.html" class="text-blue-600 hover:underline">dashboard.html</a></li>
+                    <li><a href="admin.html" class="text-blue-600 hover:underline">admin.html</a></li>
+                    <li><a href="admin-auth.html" class="text-blue-600 hover:underline">admin-auth.html</a></li>
+                    <li><a href="payment.html" class="text-blue-600 hover:underline">payment.html</a></li>
+                    <li><a href="aboutUs.html" class="text-blue-600 hover:underline">aboutUs.html</a></li>
+                </ul>
+            </div>
+            
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="font-semibold mb-2">Current URL Info:</h2>
+                <p><strong>Current URL:</strong> <span id="current-url"></span></p>
+                <p><strong>Base URL:</strong> <span id="base-url"></span></p>
+                <p><strong>Protocol:</strong> <span id="protocol"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('base-url').textContent = window.location.origin;
+        document.getElementById('protocol').textContent = window.location.protocol;
+    </script>
+</body>
+</html>

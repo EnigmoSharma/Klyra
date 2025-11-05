@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Check if admin is logged in
     const adminUsername = localStorage.getItem('admin_username');
     if (!adminUsername) {
-        window.location.href = 'admin-auth.html';
+        window.location.href = '/admin-auth.html';
         return;
     }
 
@@ -258,7 +258,7 @@ async function generateCoupon(e) {
 // Admin logout function
 function adminLogout() {
     localStorage.removeItem('admin_username');
-    window.location.href = 'admin-auth.html';
+    window.location.href = '/admin-auth.html';
 }
 
 // Load security alerts
