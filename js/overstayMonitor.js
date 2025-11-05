@@ -61,12 +61,15 @@ class OverstayMonitor {
     // Check for overstays and charge users
     async checkOverstays() {
         try {
-            const { data, error } = await supabase.rpc('check_and_handle_overstay');
-
-            if (error) {
-                console.error('Error checking overstays:', error);
-                return;
-            }
+            // TODO: Implement overstay checking when database function is ready
+            console.log('🔍 Overstay check skipped - database function not implemented yet');
+            return;
+            
+            // const { data, error } = await supabase.rpc('check_and_handle_overstay');
+            // if (error) {
+            //     console.error('Error checking overstays:', error);
+            //     return;
+            // }
 
             if (data && data.overstays_detected > 0) {
                 console.log(`⚠️ ${data.overstays_detected} overstay(s) detected and handled`);

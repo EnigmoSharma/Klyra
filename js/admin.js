@@ -18,13 +18,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     try {
         console.log('📊 Loading dashboard data...');
-        // Load dashboard data
-        await loadDashboard();
+        // Load dashboard data with timeout
+        await Promise.race([
+            loadDashboard(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Dashboard loading timeout')), 10000))
+        ]);
         console.log('✅ Dashboard data loaded successfully');
         
         console.log('🚨 Loading security alerts...');
-        // Load security alerts
-        await loadSecurityAlerts();
+        // Load security alerts with timeout
+        await Promise.race([
+            loadSecurityAlerts(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Security alerts loading timeout')), 5000))
+        ]);
         console.log('✅ Security alerts loaded successfully');
 
         // Setup coupon form
@@ -462,30 +468,6 @@ async function updateCameraUrl() {
     }
 }
 
-// Update security alert status
-async function updateAlertStatus(alertId, newStatus) {
-    try {
-        const { error } = await supabase
-            .from('security_alerts')
-            .update({ 
-                status: newStatus,
-                resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null
-            })
-            .eq('id', alertId);
-
-        if (error) throw error;
-
-        // Reload alerts to show updated status
-        await loadSecurityAlerts();
-        
-        // Show success message
-        const statusText = newStatus === 'reviewing' ? 'Reviewing' : 'Resolved';
-        alert(`✅ Alert marked as ${statusText}`);
-    } catch (err) {
-        console.error('Error updating alert status:', err);
-        alert('❌ Error updating alert status. Please try again.');
-    }
-}
 
 // Make functions available globally
 window.closeModal = closeModal;
