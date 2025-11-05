@@ -4,31 +4,63 @@ import { supabase } from './supabaseClient.js';
 let currentSpotId = null;
 
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Admin DOM loaded, starting initialization...');
+    
     // Check if admin is logged in
     const adminUsername = localStorage.getItem('admin_username');
+    console.log('🔑 Admin username from localStorage:', adminUsername);
+    
     if (!adminUsername) {
-        window.location.href = '/admin-auth.html';
+        console.log('❌ No admin username found, redirecting to login...');
+        window.location.href = 'admin-auth.html';
         return;
     }
 
-    // Load dashboard data
-    await loadDashboard();
-    
-    // Load security alerts
-    await loadSecurityAlerts();
+    try {
+        console.log('📊 Loading dashboard data...');
+        // Load dashboard data
+        await loadDashboard();
+        console.log('✅ Dashboard data loaded successfully');
+        
+        console.log('🚨 Loading security alerts...');
+        // Load security alerts
+        await loadSecurityAlerts();
+        console.log('✅ Security alerts loaded successfully');
 
-    // Setup coupon form
-    document.getElementById('coupon-form').addEventListener('submit', generateCoupon);
-    
-    // Refresh alerts every 30 seconds
-    setInterval(loadSecurityAlerts, 30000);
+        // Setup coupon form
+        const couponForm = document.getElementById('coupon-form');
+        if (couponForm) {
+            couponForm.addEventListener('submit', generateCoupon);
+            console.log('🎫 Coupon form setup complete');
+        }
+        
+        // Refresh alerts every 30 seconds
+        setInterval(loadSecurityAlerts, 30000);
+
+        // Hide loading overlay on success
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+            console.log('✅ Loading overlay hidden');
+        }
+        
+        console.log('🎉 Admin dashboard initialization complete!');
+    } catch (error) {
+        console.error('💥 Error initializing admin dashboard:', error);
+        
+        // Hide loading overlay on error and show error message
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+        
+        alert('Error loading admin dashboard. Please refresh the page.');
+    }
 });
 
 async function loadDashboard() {
     try {
-        console.log('Loading dashboard data...');
-        console.log('Supabase client:', supabase);
-        
+        console.log('🅿️ Loading parking spots...');
         // Load parking spots
         const { data: spots, error } = await supabase
             .from('parking_spots')
@@ -36,12 +68,12 @@ async function loadDashboard() {
             .order('spot_number');
 
         if (error) {
-            console.error('Error loading parking spots:', error);
+            console.error('❌ Error loading parking spots:', error);
             throw error;
         }
-        
-        console.log('Loaded spots:', spots);
+        console.log('✅ Parking spots loaded:', spots?.length || 0, 'spots');
 
+        console.log('📅 Loading active bookings...');
         // Load active bookings
         const { data: bookings, error: bookingsError } = await supabase
             .from('bookings')
@@ -49,37 +81,33 @@ async function loadDashboard() {
             .gte('end_time', new Date().toISOString());
 
         if (bookingsError) {
-            console.error('Error loading bookings:', bookingsError);
+            console.error('❌ Error loading bookings:', bookingsError);
             throw bookingsError;
         }
-        
-        console.log('Loaded bookings:', bookings);
+        console.log('✅ Active bookings loaded:', bookings?.length || 0, 'bookings');
 
+        console.log('📊 Updating stats...');
         // Update stats
-        document.getElementById('total-spots').textContent = spots.length;
-        document.getElementById('available-spots').textContent = spots.filter(s => s.is_available).length;
-        document.getElementById('occupied-spots').textContent = spots.filter(s => !s.is_available).length;
-        document.getElementById('active-bookings').textContent = bookings.length;
+        const totalSpotsEl = document.getElementById('total-spots');
+        const availableSpotsEl = document.getElementById('available-spots');
+        const occupiedSpotsEl = document.getElementById('occupied-spots');
+        const activeBookingsEl = document.getElementById('active-bookings');
+        
+        if (totalSpotsEl) totalSpotsEl.textContent = spots.length;
+        if (availableSpotsEl) availableSpotsEl.textContent = spots.filter(s => s.is_available).length;
+        if (occupiedSpotsEl) occupiedSpotsEl.textContent = spots.filter(s => !s.is_available).length;
+        if (activeBookingsEl) activeBookingsEl.textContent = bookings.length;
+        
+        console.log('✅ Stats updated');
 
+        console.log('🎨 Rendering parking grid...');
         // Render parking grid
         renderParkingGrid(spots, bookings);
+        console.log('✅ Parking grid rendered');
 
     } catch (error) {
-        console.error('Error loading dashboard:', error);
-        
-        // Show error message to user
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
-        errorDiv.innerHTML = `
-            <strong>Error loading dashboard data:</strong><br>
-            ${error.message}<br>
-            <small>Check console for more details</small>
-        `;
-        
-        const main = document.querySelector('main');
-        if (main) {
-            main.insertBefore(errorDiv, main.firstChild);
-        }
+        console.error('💥 Error loading dashboard:', error);
+        alert('Error loading dashboard data');
     }
 }
 
@@ -241,8 +269,6 @@ async function generateCoupon(e) {
     const amount = parseFloat(document.getElementById('coupon-amount').value);
     const maxUses = parseInt(document.getElementById('coupon-max-uses').value);
 
-    console.log('Generating coupon:', { code, amount, maxUses });
-
     try {
         const { data, error } = await supabase
             .from('coupons')
@@ -283,7 +309,7 @@ async function generateCoupon(e) {
 // Admin logout function
 function adminLogout() {
     localStorage.removeItem('admin_username');
-    window.location.href = '/admin-auth.html';
+    window.location.href = 'admin-auth.html';
 }
 
 // Load security alerts

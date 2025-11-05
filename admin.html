@@ -8,13 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- Immediate Authentication Check -->
     <script>
-        // Hide page content immediately if not authenticated
-        const adminUsername = localStorage.getItem('admin_username');
-        if (!adminUsername) {
-            document.documentElement.style.display = 'none';
-            window.location.replace('/admin-auth.html');
+        // Immediate admin authentication check - runs before page loads
+        if (!localStorage.getItem('admin_username')) {
+            window.location.href = 'admin-auth.html';
         }
     </script>
 </head>
@@ -24,6 +21,13 @@
 
     <!-- Admin Dashboard -->
     <main class="container mx-auto px-4 py-10">
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p class="text-gray-700">Loading admin dashboard...</p>
+            </div>
+        </div>
         <!-- Header -->
         <div class="mb-8 flex justify-between items-center">
             <div>
