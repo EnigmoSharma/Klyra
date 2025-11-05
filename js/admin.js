@@ -1,8 +1,5 @@
 // Admin Dashboard JavaScript
-const { createClient } = supabase;
-const supabaseUrl = 'https://qkfqxemmuzdnbbriecnq.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrZnF4ZW1tdXpkbmJicmllY25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExMjgyNTcsImV4cCI6MjA3NjcwNDI1N30.OFjfbDCTocSm4TH-NuDYX03hQg-CsOD93lT0DdG0dc4';
-const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from './supabaseClient.js';
 
 let currentSpotId = null;
 
@@ -29,21 +26,34 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function loadDashboard() {
     try {
+        console.log('Loading dashboard data...');
+        console.log('Supabase client:', supabase);
+        
         // Load parking spots
-        const { data: spots, error } = await supabaseClient
+        const { data: spots, error } = await supabase
             .from('parking_spots')
             .select('*')
             .order('spot_number');
 
-        if (error) throw error;
+        if (error) {
+            console.error('Error loading parking spots:', error);
+            throw error;
+        }
+        
+        console.log('Loaded spots:', spots);
 
         // Load active bookings
-        const { data: bookings, error: bookingsError } = await supabaseClient
+        const { data: bookings, error: bookingsError } = await supabase
             .from('bookings')
             .select('*')
             .gte('end_time', new Date().toISOString());
 
-        if (bookingsError) throw bookingsError;
+        if (bookingsError) {
+            console.error('Error loading bookings:', bookingsError);
+            throw bookingsError;
+        }
+        
+        console.log('Loaded bookings:', bookings);
 
         // Update stats
         document.getElementById('total-spots').textContent = spots.length;
@@ -56,7 +66,20 @@ async function loadDashboard() {
 
     } catch (error) {
         console.error('Error loading dashboard:', error);
-        alert('Error loading dashboard data');
+        
+        // Show error message to user
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
+        errorDiv.innerHTML = `
+            <strong>Error loading dashboard data:</strong><br>
+            ${error.message}<br>
+            <small>Check console for more details</small>
+        `;
+        
+        const main = document.querySelector('main');
+        if (main) {
+            main.insertBefore(errorDiv, main.firstChild);
+        }
     }
 }
 
@@ -88,7 +111,7 @@ async function showSpotDetails(spotId) {
     
     try {
         // Get spot details
-        const { data: spot, error: spotError } = await supabaseClient
+        const { data: spot, error: spotError } = await supabase
             .from('parking_spots')
             .select('*')
             .eq('id', spotId)
@@ -97,7 +120,7 @@ async function showSpotDetails(spotId) {
         if (spotError) throw spotError;
 
         // Get all bookings for this spot
-        const { data: allBookings, error: bookingsError } = await supabaseClient
+        const { data: allBookings, error: bookingsError } = await supabase
             .from('bookings')
             .select(`
                 *,
@@ -218,8 +241,10 @@ async function generateCoupon(e) {
     const amount = parseFloat(document.getElementById('coupon-amount').value);
     const maxUses = parseInt(document.getElementById('coupon-max-uses').value);
 
+    console.log('Generating coupon:', { code, amount, maxUses });
+
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await supabase
             .from('coupons')
             .insert([{
                 code: code,
@@ -264,7 +289,7 @@ function adminLogout() {
 // Load security alerts
 async function loadSecurityAlerts() {
     try {
-        const { data: alerts, error } = await supabaseClient
+        const { data: alerts, error } = await supabase
             .from('security_alerts')
             .select(`
                 *,
@@ -352,7 +377,7 @@ async function loadSecurityAlerts() {
 // Update alert status
 async function updateAlertStatus(alertId, newStatus) {
     try {
-        const { error } = await supabaseClient
+        const { error } = await supabase
             .from('security_alerts')
             .update({ 
                 status: newStatus,
@@ -393,7 +418,7 @@ async function updateCameraUrl() {
     }
     
     try {
-        const { error } = await supabaseClient
+        const { error } = await supabase
             .from('parking_spots')
             .update({ camera_feed_url: newUrl.trim() })
             .eq('id', currentSpotId);
@@ -414,7 +439,7 @@ async function updateCameraUrl() {
 // Update security alert status
 async function updateAlertStatus(alertId, newStatus) {
     try {
-        const { error } = await supabaseClient
+        const { error } = await supabase
             .from('security_alerts')
             .update({ 
                 status: newStatus,
