@@ -376,14 +376,16 @@ async function loadSecurityAlerts() {
                     ${alert.status === 'pending' ? `
                         <div class="flex gap-2 mt-3">
                             <button 
-                                onclick="updateAlertStatus('${alert.id}', 'reviewing')"
-                                class="flex-1 bg-yellow-600 text-white py-1 px-3 rounded text-sm hover:bg-yellow-700"
+                                data-alert-id="${alert.id}" 
+                                data-action="reviewing"
+                                class="alert-action-btn flex-1 bg-yellow-600 text-white py-1 px-3 rounded text-sm hover:bg-yellow-700"
                             >
                                 Mark as Reviewing
                             </button>
                             <button 
-                                onclick="updateAlertStatus('${alert.id}', 'resolved')"
-                                class="flex-1 bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700"
+                                data-alert-id="${alert.id}" 
+                                data-action="resolved"
+                                class="alert-action-btn flex-1 bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700"
                             >
                                 Mark as Resolved
                             </button>
@@ -391,8 +393,9 @@ async function loadSecurityAlerts() {
                     ` : ''}
                     ${alert.status === 'reviewing' ? `
                         <button 
-                            onclick="updateAlertStatus('${alert.id}', 'resolved')"
-                            class="w-full bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700 mt-3"
+                            data-alert-id="${alert.id}" 
+                            data-action="resolved"
+                            class="alert-action-btn w-full bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700 mt-3"
                         >
                             Mark as Resolved
                         </button>
@@ -401,6 +404,37 @@ async function loadSecurityAlerts() {
             `;
         }).join('');
 
+        // Add event listeners to all alert action buttons
+        const actionButtons = container.querySelectorAll('.alert-action-btn');
+        console.log(`🔘 Found ${actionButtons.length} alert action buttons`);
+        
+        actionButtons.forEach((button, index) => {
+            console.log(`🔗 Adding event listener to button ${index + 1}`);
+            button.addEventListener('click', async (e) => {
+                e.preventDefault(); // Prevent any default behavior
+                
+                const alertId = e.target.getAttribute('data-alert-id');
+                const action = e.target.getAttribute('data-action');
+                
+                console.log(`🖱️ Button clicked - Alert ID: ${alertId}, Action: ${action}`);
+                
+                // Disable button during processing
+                e.target.disabled = true;
+                const originalText = e.target.textContent;
+                e.target.textContent = 'Processing...';
+                
+                try {
+                    await updateAlertStatus(alertId, action);
+                } catch (error) {
+                    console.error('❌ Error in button click handler:', error);
+                    alert('Error updating alert status. Please try again.');
+                    // Restore original text on error
+                    e.target.textContent = originalText;
+                    e.target.disabled = false;
+                }
+            });
+        });
+
     } catch (error) {
         console.error('Error loading security alerts:', error);
     }
@@ -408,25 +442,41 @@ async function loadSecurityAlerts() {
 
 // Update alert status
 async function updateAlertStatus(alertId, newStatus) {
+    console.log(`🔄 Updating alert ${alertId} to status: ${newStatus}`);
+    
     try {
+        // Check if admin username exists
+        const adminUsername = localStorage.getItem('admin_username');
+        if (!adminUsername) {
+            throw new Error('Admin not authenticated. Please log in again.');
+        }
+
+        console.log(`👤 Admin username: ${adminUsername}`);
+        
         const { error } = await supabase
             .from('security_alerts')
             .update({ 
                 status: newStatus,
                 resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null,
-                resolved_by: localStorage.getItem('admin_username')
+                resolved_by: adminUsername
             })
             .eq('id', alertId);
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Supabase error:', error);
+            throw error;
+        }
+
+        console.log('✅ Alert status updated successfully');
 
         // Reload alerts
         await loadSecurityAlerts();
         
-        alert(`Alert status updated to: ${newStatus}`);
+        alert(`✅ Alert status updated to: ${newStatus}`);
     } catch (error) {
-        console.error('Error updating alert status:', error);
-        alert('Error updating alert status');
+        console.error('💥 Error updating alert status:', error);
+        alert(`❌ Error updating alert status: ${error.message}`);
+        throw error; // Re-throw to be caught by the button click handler
     }
 }
 
@@ -472,5 +522,4 @@ async function updateCameraUrl() {
 // Make functions available globally
 window.closeModal = closeModal;
 window.adminLogout = adminLogout;
-window.updateAlertStatus = updateAlertStatus;
 window.updateCameraUrl = updateCameraUrl;
