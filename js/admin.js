@@ -457,8 +457,7 @@ async function updateAlertStatus(alertId, newStatus) {
             .from('security_alerts')
             .update({ 
                 status: newStatus,
-                resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null,
-                resolved_by: adminUsername
+                resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null
             })
             .eq('id', alertId);
 
