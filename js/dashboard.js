@@ -496,9 +496,12 @@ window.openCameraFeed = function(bookingId, spotNumber, location, vehicle, time,
     document.getElementById('modal-vehicle').textContent = vehicle;
     document.getElementById('modal-time').textContent = time;
     
-    // Set camera feed URL
+    // Set camera feed URL with autoplay parameters (matching admin dashboard)
     if (cameraUrl && cameraUrl !== 'null' && cameraUrl !== '') {
-        iframe.src = cameraUrl;
+        const urlParams = cameraUrl.includes('?') ? '&' : '?';
+        const finalUrl = `${cameraUrl}${urlParams}autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`;
+        console.log('🎥 Setting camera URL:', finalUrl);
+        iframe.src = finalUrl;
     } else {
         iframe.src = '';
         iframe.parentElement.innerHTML = `
